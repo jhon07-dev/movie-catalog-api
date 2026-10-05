@@ -1,22 +1,20 @@
 from fastapi import FastAPI
 
-app = FastAPI(
-    title="Movie Catalog API",
-    description="REST API for managing movies",
-    version="1.0.0"
-)
+from app.database.connection import client
 
-
-@app.get("/")
-def root():
-    return {
-        "message": "Welcome to Movie Catalog API",
-        "status": "running"
-    }
+app = FastAPI()
 
 
 @app.get("/health")
 def health_check():
-    return {
-        "status": "healthy"
-    }
+    try:
+        client.admin.command("ping")
+        return {
+            "api": "ok",
+            "database": "connected"
+        }
+    except Exception:
+        return {
+            "api": "ok",
+            "database": "disconnected"
+        }
